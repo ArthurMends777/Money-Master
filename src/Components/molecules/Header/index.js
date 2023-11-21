@@ -9,7 +9,7 @@ export const Header = ({children, ...props}) => {
     const navigation = useNavigation();
     return (
         <HeaderContainer {...props}>
-            <TouchableOpacity onPress={() => navigation.openDrawer()}>
+            <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ margin: 10}}>
                 <Ionicons name="menu-outline" size={40} color="white" />
             </TouchableOpacity>
             <Text color="white" weight="bold" size={24}> 

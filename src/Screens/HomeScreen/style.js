@@ -9,6 +9,7 @@ export const SaldoContainer = styled.View`
   height: 100%;
   border-radius: 10px;
   margin-bottom: ${({ theme, mb }) => theme.metrics.px(mb || 0)}px;
+  box-shadow: 10px 15px 15px #000;
 `
 
 export const Totais = styled.View`

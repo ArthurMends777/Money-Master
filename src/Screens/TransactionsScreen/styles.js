@@ -8,7 +8,7 @@ export const Background = styled.View`
 export const Input = styled.TextInput`
   height: 50px;
   width: 90%;
-  background-color: #FFF;
+  background-color: #D9D9D8;
   font-size: 17px;
   padding: 0 8px;
   margin-bottom: 14px;
@@ -20,7 +20,7 @@ export const SubmitButton = styled.TouchableOpacity`
   height: 50px;
   align-items: center;
   justify-content: center;
-  background-color: #00b94a;
+  background-color: #00755C;
   border-radius: 4px;
 `;
 
@@ -31,6 +31,8 @@ export const SubmitText = styled.Text`
 `;
 
 export const BtnReceita = styled.TouchableOpacity`
+  display: flex;
+  flex-direction: row;
   width: 45%;
   height: 50px;
   align-items: center;

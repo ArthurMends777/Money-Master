@@ -3,6 +3,7 @@ import { TouchableOpacity, FlatList, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Container, Header, Text } from '../../Components';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { SaldoContainer, ContainerMovimentacao, UltimasMovis, CustomText, Filter, Totais } from './style';
 import { ref, onValue, getDatabase } from 'firebase/database';
 import { auth } from '../../../firebaseConection';
@@ -14,6 +15,7 @@ export const HomeScreen = () => {
   const [saldoAtual, setSaldoAtual] = useState(0);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [filtro, setFiltro ] = useState("Filtrar");
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -56,17 +58,19 @@ export const HomeScreen = () => {
     const formattedDate = new Intl.DateTimeFormat('pt-BR').format(data);
 
     return (
-      <UltimasMovis>
-        <CustomText bg={item.type === 'Receita' ? 'green' : 'despesas'}>
-          <Text size={18} color="white">
-            {item.type === 'Receita' ? 'Receitas' : 'Despesas'}
-          </Text>
-        </CustomText>
-        <Container h={30} bg="home" dir="row" justify="space-between">
-          <Text> R$ {item.amount ? item.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Valor indisponível'} </Text>
-          <Text size={18} mr={70}> {formattedDate} </Text>
-        </Container>
-      </UltimasMovis>
+      <TouchableOpacity>
+        <UltimasMovis>
+          <CustomText bg={item.type === 'Receita' ? 'green' : 'despesas'}>
+            <Text size={18} color="white">
+              {item.type === 'Receita' ? 'Receitas' : 'Despesas'}
+            </Text>
+          </CustomText>
+          <Container h={30} bg="home" dir="row" justify="space-between">
+            <Text> R$ {item.amount ? item.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Valor indisponível'} </Text>
+            <Text size={18} mr={70}> {formattedDate} </Text>
+          </Container>
+        </UltimasMovis>
+      </TouchableOpacity>
     );
   };
 
@@ -101,8 +105,10 @@ export const HomeScreen = () => {
         <SaldoContainer>
           <Text> Saldo da conta </Text>
           {saldoVisivel ? <Text> R$ {saldoAtual.toFixed(2)} </Text> : null}
+
           <TouchableOpacity onPress={() => setSaldoVisivel(!saldoVisivel)}>
-            <Text size={18}>{saldoVisivel ? 'Esconder' : 'Mostrar'} saldo</Text>
+            {saldoVisivel ? <Ionicons name="eye-off-sharp" size={30} color="black" />:
+                            <Ionicons name="eye-sharp" size={30} color="black" />} 
           </TouchableOpacity>
         </SaldoContainer>
       </Container>
@@ -123,16 +129,17 @@ export const HomeScreen = () => {
     
       </Container>
 
-      <Container h={320} justify="center" align="center" mt={20}>
+      <Container h={320} justify="center" align="center">
         <ContainerMovimentacao>
           <Container mt={10} h={30} dir="row" justify="space-between">
-            <Text size={20}> Minhas movimentações</Text>
+            <Ionicons name="calendar-outline" size={24} color="black" />
+            <Text size={20} ml={-45}> Minhas movimentações</Text>
             <Filter onPress={openDatePicker}>
-              <Text size={20}> Filtrar </Text>
+              <Text size={20}> {filtro} </Text>
             </Filter>
             {selectedDate && (
               <TouchableOpacity onPress={clearDateFilter}>
-                <Text size={20}> Limpar Filtro </Text>
+                <Text size={20}> Limpar </Text>
               </TouchableOpacity>
             )}
           </Container>

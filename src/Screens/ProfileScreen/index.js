@@ -1,10 +1,16 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { Header, Container, Text } from "../../Components";
+import { MaterialIcons } from '@expo/vector-icons';
 
 export const ProfileScreen = () => {
     return(
-        <View style={{ justifyContent: "center", alignItems: 'center', flex: 1}}>
-            <Text> Profile </Text>
-        </View>
+        <Container>
+            <Header />
+            <Container bg="home" h={50} dir="row" align="center" mt={10}>
+                <Text mr={10}> </Text>
+                <MaterialIcons name="people" size={28} color="black" />
+                <Text size={20} ml={10} > Tela de Perfil do usuário</Text>
+            </Container>
+        </Container>
     )
 }

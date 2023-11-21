@@ -3,6 +3,7 @@ import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Input, SubmitButton, SubmitText, BtnReceita } from './styles';
 import { Container, Text, CustomAlert, Header } from '../../Components';
 import { getDatabase, ref, push, set } from 'firebase/database';
+import { FontAwesome } from '@expo/vector-icons';
 import { auth } from '../../../firebaseConection';
 
 export const TransectionScreen = () => {
@@ -74,9 +75,10 @@ export const TransectionScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <Container bg="bg" align="center">
-          <Text size={24} mb={15} weight="bold">
-            Registrar Transação
+        <Container bg="white" align="center">
+          <Header />
+          <Text size={24} mb={15} mt={10} weight="bold">
+            Registrar
           </Text>
           <Input
             placeholder="Descrição da transação"
@@ -90,14 +92,16 @@ export const TransectionScreen = () => {
             onChangeText={(text) => setAmount(text)}
           />
 
-          <Container mt={10} bg='bg' h={70} dir="row" justify="space-around">
+          <Container mt={10} bg='white' h={70} dir="row" justify="space-around">
             <BtnReceita onPress={() => setTransactionType('Receita')}>
-              <Text size={18} color="white">
+              <FontAwesome name="arrow-circle-up" size={28} color="green" />
+              <Text size={18} ml={10} color="white">
                 Receita
               </Text>
             </BtnReceita>
             <BtnReceita onPress={() => setTransactionType('Despesa')}>
-              <Text size={18} color="white">
+              <FontAwesome name="arrow-circle-down" size={28} color="red" />
+              <Text size={18} ml={10} color="white">
                 Despesa
               </Text>
             </BtnReceita>
