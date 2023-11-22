@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ref, onValue, getDatabase, push, set } from 'firebase/database';
 import { auth } from '../../../firebaseConection';
 import { Container, Header, CustomAlert, Text } from '../../Components';
+import { Input, Btn } from './style'
 
 export const BudgetScreem = () => {
   const navigation = useNavigation();
@@ -38,12 +39,37 @@ export const BudgetScreem = () => {
     fetchMetas();
   }, []);
 
+  const handleApagarMeta = async (meta) => {
+    try {
+      const metasRef = ref(getDatabase(), `metas/${auth.currentUser.uid}`);
+      const metaRef = ref(metasRef, meta.id); // Adicionei um campo "id" para identificar cada meta
+      await set(metaRef, null); // Remove a meta do banco de dados
+
+      setAlertTitle('Sucesso');
+      setAlertMessage('Meta apagada com sucesso!');
+      setAlertVisible(true);
+
+      // Atualizar a lista de metas
+      fetchMetas();
+    } catch (error) {
+      console.error('Erro ao apagar meta:', error.message);
+      setAlertTitle('Erro');
+      setAlertMessage('Erro ao apagar meta. Tente novamente.');
+      setAlertVisible(true);
+    }
+  };
+
+
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleMetaPress(item)}>
-      <View>
-        <Text>{item.nome}</Text>
-        <Text>Valor: R$ {item.valor}</Text>
-      </View>
+    <TouchableOpacity onPress={() => handleMetaPress(item)} style={{ marginBottom: 10}}>
+      <Container bg="home" w={375} h={90} justify="center" align="center">
+        <Text size={20}>{item.nome}</Text>
+        <Text size={20}>Valor: R$ {item.valor}</Text>
+        <TouchableOpacity title="Apagar" onPress={() => handleApagarMeta(item)}>
+          <Text size={18} color="red"> Apagar </Text>
+        </TouchableOpacity>
+      </Container>
     </TouchableOpacity>
   );
 
@@ -95,21 +121,23 @@ export const BudgetScreem = () => {
   return (
     <Container>
       <Header>Metas de Orçamento</Header>
-      <View>
-        <Text>Adicionar Nova Meta:</Text>
-        <TextInput
+      <Container h={200} justify="center" align="center">
+        <Text size={20}>Adicionar Nova Meta</Text>
+        <Input
           placeholder="Nome"
           value={novaMetaNome}
           onChangeText={(text) => setNovaMetaNome(text)}
         />
-        <TextInput
+        <Input
           placeholder="Valor"
           keyboardType="numeric"
           value={novaMetaValor}
           onChangeText={(text) => setNovaMetaValor(text)}
         />
-        <Button title="Adicionar Meta" onPress={handleAdicionarMeta} />
-      </View>
+        <Btn title="Adicionar Meta" onPress={handleAdicionarMeta}>
+          <Text size={18} color="white"> Adicionar </Text>
+        </Btn>
+      </Container>
       <FlatList
         data={metas}
         renderItem={renderItem}

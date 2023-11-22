@@ -37,11 +37,11 @@ export const Routes = () => {
           <Drawer.Screen name="Home" component={HomeScreen} options={{ headerShown: false}}/>
           <Drawer.Screen name='Perfil' component={ProfileScreen} options={{ headerShown: false}} />
           <Drawer.Screen name='transection' component={TransectionScreen} options={{ headerShown: false}}/>
-          <Drawer.Screen name='budget' component={BudgetScreem} />
-          <Drawer.Screen name='Category' component={CategoryScreen} />
-          <Drawer.Screen name='Export' component={ExportScreen} />
-          <Drawer.Screen name='Feedback' component={FeedbackScreen} />
-          <Drawer.Screen name='Settings' component={SettingsScreen} />
+          <Drawer.Screen name='budget' component={BudgetScreem} options={{ headerShown: false}}/>
+          <Drawer.Screen name='Category' component={CategoryScreen} options={{ headerShown: false}}/>
+          <Drawer.Screen name='Export' component={ExportScreen} options={{ headerShown: false}} />
+          <Drawer.Screen name='Feedback' component={FeedbackScreen} options={{ headerShown: false}}/>
+          <Drawer.Screen name='Settings' component={SettingsScreen} options={{ headerShown: false}}/>
         </Drawer.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="Login">
