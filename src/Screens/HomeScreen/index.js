@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, FlatList, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Container, Header, Text } from '../../Components';
+import { Container, Header, Text, CustomAlert } from '../../Components';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SaldoContainer, ContainerMovimentacao, UltimasMovis, CustomText, Filter, Totais } from './style';
@@ -13,6 +13,9 @@ export const HomeScreen = () => {
   const [saldoVisivel, setSaldoVisivel] = useState(true);
   const [movimentacoes, setMovimentacoes] = useState([]);
   const [saldoAtual, setSaldoAtual] = useState(0);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [filtro, setFiltro ] = useState("Filtrar");
@@ -50,6 +53,20 @@ export const HomeScreen = () => {
     fetchTransactions();
   }, []);
 
+  const handleShowAlert = (transaction) => {
+    const { description, type, amount, timestamp, category } = transaction;
+
+    // Formata a data para "dia/mês/ano"
+    const formattedDate = new Intl.DateTimeFormat('pt-BR').format(new Date(timestamp));
+
+    // Atualiza a mensagem do alerta incluindo a categoria
+    const alertMessage = `Descrição: ${description}\nTipo: ${type}\nCategoria: ${category}\nValor: R$ ${amount.toFixed(2)}\nData: ${formattedDate}`;
+
+    setAlertTitle('Detalhes da Transação');
+    setAlertMessage(alertMessage);
+    setAlertVisible(true);
+  };
+
   const renderItem = ({ item }) => {
     // Converte a string de data para um objeto Date
     const data = new Date(item.timestamp);
@@ -58,7 +75,7 @@ export const HomeScreen = () => {
     const formattedDate = new Intl.DateTimeFormat('pt-BR').format(data);
 
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => handleShowAlert(item)}>
         <UltimasMovis>
           <CustomText bg={item.type === 'Receita' ? 'green' : 'despesas'}>
             <Text size={18} color="white">
@@ -96,6 +113,10 @@ export const HomeScreen = () => {
   const calculateTotalDespesas = (transactions) => {
     const despesas = transactions.filter((transaction) => transaction.type === 'Despesa');
     return despesas.reduce((total, transaction) => total + transaction.amount, 0);
+  };
+
+  const closeAlert = () => {
+    setAlertVisible(false);
   };
 
   return (
@@ -160,6 +181,13 @@ export const HomeScreen = () => {
           />
         </ContainerMovimentacao>
       </Container>
+
+      <CustomAlert
+            visible={alertVisible}
+            title={alertTitle}
+            message={alertMessage}
+            onClose={closeAlert}
+      />
     </Container>
   );
 };

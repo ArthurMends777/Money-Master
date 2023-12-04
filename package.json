@@ -28,7 +28,11 @@
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
     "styled-components": "^6.1.1",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "expo-print": "~12.4.2",
+    "expo-sharing": "~11.5.0",
+    "@react-native-picker/picker": "2.4.10",
+    "expo-file-system": "~15.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
