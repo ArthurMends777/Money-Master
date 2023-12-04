@@ -1,159 +1,178 @@
-import React, { useState, useEffect } from "react";
-import { Header, Container, Text } from "../../Components";
-import { TouchableOpacity, View, TextInput } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useEffect } from 'react';
+import { Header, Container, Text } from '../../Components';
+import { TouchableOpacity, FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { auth } from '../../../firebaseConection';
-import { ref, get, getDatabase, updateProfile } from 'firebase/database';
-import { updateEmailAuth, updatePassword, sendEmailVerification  } from 'firebase/auth';
+import { ref, get, getDatabase, update } from 'firebase/database';
 import { MaterialIcons } from '@expo/vector-icons';
+import styled from 'styled-components/native';
+
+const MetaContainer = styled.TouchableOpacity`
+  margin-bottom: 10px;
+`;
+
+const MetaCard = styled(Container)`
+  background-color: #7A0053;
+  width: 375px;
+  height: 90px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MetaText = styled(Text)`
+  font-size: 20px;
+  color: white;
+`;
+
+const Input = styled.TextInput`
+    background-color: #D9D9D9;
+    width: 80%;
+    margin-left: 10px;
+    padding: 10px;
+    font-size: 15px;
+`
 
 export const ProfileScreen = () => {
-    const navigation = useNavigation();
-    const [displayName, setDisplayName] = useState('');
-    const [email, setEmail] = useState('');
-    const [newName, setNewName] = useState('');
-    const [newEmail, setNewEmail] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [isEditingName, setIsEditingName] = useState(false);
+  const navigation = useNavigation();
+  const [displayName, setDisplayName] = useState('');
+  const [email, setEmail] = useState('');
+  const [newName, setNewName] = useState('');
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [metas, setMetas] = useState([]);
 
-    const handleLogout = async () => {
-        try {
-            await auth.signOut();
-            navigation.navigate('Login');
-        } catch (error) {
-            console.error('Erro ao fazer logout:', error.message);
+  const handleUpdateProfile = async () => {
+    try {
+      const user = auth.currentUser;
+      const db = getDatabase();
+
+      // Atualizar os dados do usuário no Realtime Database
+      const userRef = ref(db, `users/${user.uid}`);
+      await update(userRef, { name: newName });
+
+      alert('Perfil atualizado com sucesso!');
+      fetchUserData();
+      setIsEditingName(false); // Desativar o modo de edição após a atualização
+    } catch (error) {
+      console.error('Erro ao atualizar o perfil:', error.message);
+    }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const uid = user.uid;
+        const db = getDatabase();
+        const userRef = ref(db, `users/${uid}`);
+        const userEmail = user.email;
+
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+          // Obtém a propriedade 'name' do nó 'users/UID'
+          const userName = snapshot.val().name;
+          setDisplayName(userName || 'Nome de usuário não definido');
+          setEmail(userEmail || 'E-mail não definido');
+        } else {
+          console.error('Nó de usuário não encontrado no Realtime Database.');
         }
-    };
 
-    const handleUpdateProfile = async () => {
-        try {
-            const user = auth.currentUser;
-            const db = getDatabase();
+        // Buscar as metas do usuário
+        const metasRef = ref(db, `metas/${auth.currentUser.uid}`);
+        const metasSnapshot = await get(metasRef);
 
-            // Atualizar o nome de exibição
-            if (newName) {
-                await updateProfile(user, { displayName: newName });
-                setDisplayName(newName);
-            }
-
-            // Atualizar o e-mail
-            if (newEmail) {
-                // Enviar e-mail de verificação antes de alterar o e-mail
-                await sendEmailVerification(user);
-
-                // Atualizar apenas se o e-mail já estiver verificado
-                let verificade = user.emailVerified;
-                verificade = true;
-                if (verificade) {
-                    await updateEmailAuth(user, newEmail);
-                    setEmail(newEmail);
-                } else {
-                    alert("Um e-mail de verificação foi enviado. Verifique seu novo e-mail antes de continuar.");
-                    return;
-                }
-            }
-
-            // Atualizar a senha
-            if (newPassword) {
-                await updatePassword(user, newPassword);
-            }
-
-            // Atualizar os dados do usuário no Realtime Database
-            const userRef = ref(db, `users/${user.uid}`);
-            await update(userRef, { name: newName });
-
-            alert("Perfil atualizado com sucesso!");
-            setIsEditingName(false); // Desativar o modo de edição após a atualização
-        } catch (error) {
-            console.error("Erro ao atualizar o perfil:", error.message);
+        if (metasSnapshot.exists()) {
+          const metasData = metasSnapshot.val();
+          const metasArray = Object.values(metasData);
+          setMetas(metasArray);
+        } else {
+          setMetas([]);
         }
-    };
+      } else {
+        console.error('Usuário não está logado.');
+        navigation.navigate('Login');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados do usuário:', error.message);
+    }
+  };
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const user = auth.currentUser;
-                if (user) {
-                    const uid = user.uid;
-                    const db = getDatabase();
-                    const userRef = ref(db, `users/${uid}`);
-                    const userEmail = user.email;
+  useEffect(() => {
+    fetchUserData();
+  }, [navigation]);
 
-                    const snapshot = await get(userRef);
+  const renderMetaItem = ({ item }) => (
+    <MetaContainer onPress={() => handleMetaPress(item)} style={{ marginBottom: 10 }}>
+      <MetaCard>
+        <MetaText size={20}>{item.nome}</MetaText>
+        <MetaText size={20}>Valor: R$ {item.valor}</MetaText>
+      </MetaCard>
+    </MetaContainer>
+  );
 
-                    if (snapshot.exists()) {
-                        // Obtém a propriedade 'name' do nó 'users/UID'
-                        const userName = snapshot.val().name;
-                        setDisplayName(userName || 'Nome de usuário não definido');
-                        setEmail(userEmail || 'E-mail não definido');
-                    } else {
-                        console.error('Nó de usuário não encontrado no Realtime Database.');
-                    }
-                } else {
-                    console.error('Usuário não está logado.');
-                    navigation.navigate('Login');
-                }
-            } catch (error) {
-                console.error('Erro ao buscar dados do usuário:', error.message);
-            }
-        };
+  const handleMetaPress = (meta) => {
+    // Implemente a lógica desejada ao pressionar uma meta
+  };
 
-        fetchUserData();
-    }, [navigation]);
+  return (
+    <Container>
+      <Header />
+      <Container bg="home" h={50} dir="row" align="center" mt={10}>
+        <Text mr={10}> </Text>
+        <MaterialIcons name="people" size={28} color="black" />
+        <Text size={20} ml={10}>
+          Tela de Perfil do usuário
+        </Text>
+      </Container>
+      <Container dir="row" align="center" h={60}>
+        {isEditingName ? (
+          <Input
+            placeholder="Novo nome"
+            value={newName}
+            onChangeText={(text) => setNewName(text)}
+          />
+        ) : (
+          <>
+            <Text size={22} mt={10} ml={10}weight="bold" style={{ flex: 1 }}>
+              Olá, {displayName}!
+            </Text>
+            <TouchableOpacity style={{ marginRight: 10}} onPress={() => setIsEditingName(true)}>
+              <MaterialIcons name="edit" size={25} color="black" />
+            </TouchableOpacity>
 
-    return (
-        <Container>
-            <Header />
-            <Container bg="home" h={50} dir="row" align="center" mt={10}>
-                <Text mr={10}> </Text>
-                <MaterialIcons name="people" size={28} color="black" />
-                <Text size={20} ml={10} > Tela de Perfil do usuário</Text>
-            </Container>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                {isEditingName ? (
-                    <TextInput
-                        style={{ flex: 1, padding: 5, fontSize: 18 }}
-                        placeholder="Novo nome"
-                        value={newName}
-                        onChangeText={(text) => setNewName(text)}
-                    />
-                ) : (
-                    <>
-                        <Text size={18} mt={10} style={{ flex: 1 }}>
-                            Bem-vindo, {displayName}!
-                        </Text>
-                        <TouchableOpacity onPress={() => setIsEditingName(true)}>
-                            <MaterialIcons name="edit" size={24} color="black" />
-                        </TouchableOpacity>
-                    </>
-                )}
-            </View>
-            <Text size={16} mt={5}>
+          </>
+        )}
+
+      </Container>
+        <Container h={100} justify="center">
+            <Text size={20} mt={10} ml={10}>
                 E-mail: {email}
             </Text>
-            <View>
-                <TextInput
-                    placeholder="Novo e-mail"
-                    value={newEmail}
-                    onChangeText={(text) => setNewEmail(text)}
-                />
-                <TextInput
-                    placeholder="Nova senha"
-                    secureTextEntry
-                    value={newPassword}
-                    onChangeText={(text) => setNewPassword(text)}
-                />
+            <Container justify="center" align="center">
                 <TouchableOpacity onPress={handleUpdateProfile}>
-                    <Container bg="green" w={200} h={40} justify="center" align="center" style={{ alignSelf: 'center' }}>
-                        <Text size={18} color="white">Atualizar Perfil</Text>
-                    </Container>
-                </TouchableOpacity>
-            </View>
-            <TouchableOpacity onPress={handleLogout}>
-                <Container bg="red" w={200} h={40} justify="center" align="center" style={{ alignSelf: 'center' }}>
-                    <Text size={18} color="white">Logout</Text>
+                <Container
+                    bg="roxoClaro"
+                    w={200}
+                    h={40}
+                    justify="center"
+                    align="center"
+                    style={{ alignSelf: 'center' }}
+                >
+                    <Text size={18} color="white">
+                    Atualizar Perfil
+                    </Text>
                 </Container>
-            </TouchableOpacity>
+                </TouchableOpacity>
+            </Container>
         </Container>
-    );
+        <Text size={18} mb={20} weight="bold"> Suas metas: </Text>
+        <Container align="center">
+            <FlatList
+                data={metas}
+                renderItem={renderMetaItem}
+                keyExtractor={(item, index) => index.toString()}
+            />
+        </Container>
+    </Container>
+  );
 };

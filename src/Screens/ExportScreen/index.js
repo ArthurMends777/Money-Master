@@ -1,10 +1,33 @@
 import React from 'react';
-import { View, Text, TouchableOpacity  } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import styled from 'styled-components/native';
+import { Container, Text, Header } from '../../Components';
 import * as FileSystem from 'expo-file-system';
 import { getDatabase, ref, get } from 'firebase/database';
 import { auth } from '../../../firebaseConection';
 import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
+
+const ExportTitle = styled(Text)`
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-left: 10px;
+`;
+
+const ExportButton = styled(TouchableOpacity)`
+  background-color: #4CAF50;
+  padding: 15px;
+  border-radius: 8px;
+  align-items: center;
+`;
+
+const ExportButtonText = styled(Text)`
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+`;
 
 export const ExportScreen = () => {
     const exportData = async () => {
@@ -127,11 +150,15 @@ export const ExportScreen = () => {
   
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Exportar PDF</Text>
-      <TouchableOpacity onPress={exportData}>
-        <Text>Exportar e Compartilhar PDF</Text>
-      </TouchableOpacity>
-    </View>
+    <Container>
+        <Header />
+        <ExportTitle>Exportar PDF</ExportTitle>
+        <Container align="center">
+            <ExportButton onPress={exportData}>
+                <ExportButtonText>Exportar e Compartilhar PDF</ExportButtonText>
+            </ExportButton>
+
+        </Container>
+    </Container>
   );
 };

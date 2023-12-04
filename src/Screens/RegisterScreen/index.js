@@ -53,7 +53,7 @@ const handleSignup = () => {
 
         }).then(() => {
           console.log('Nome associado ao UID com sucesso!');
-          navigation.navigate('Home');
+          navigation.navigate('Início');
         }).catch((error) => {
           console.error('Erro ao associar nome ao UID:', error);
         });

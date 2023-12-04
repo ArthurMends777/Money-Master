@@ -23,7 +23,7 @@ export const LoginScreen = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         console.log('Login bem-sucedido');
-        navigation.navigate('Home')
+        navigation.navigate('Início')
       })
       .catch((error) => {
         const errorCode = error.code;

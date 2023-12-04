@@ -1,63 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, TouchableOpacity, FlatList, Modal } from 'react-native';
+import { View, Button, TouchableOpacity, FlatList, Modal } from 'react-native';
 import { ref, push, set, get, getDatabase, remove, update } from 'firebase/database';
-import { CustomAlert, Header } from '../../Components';
-import styled from 'styled-components/native';
-
-const CategoryItemContainer = styled(View)`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-`;
-
-const EditButton = styled(TouchableOpacity)`
-  background-color: #3498db;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin-right: 10px;
-`;
-
-const EditButtonText = styled(Text)`
-  color: white;
-`;
-
-const DeleteButton = styled(TouchableOpacity)`
-  background-color: #e74c3c;
-  padding: 5px 10px;
-  border-radius: 5px;
-`;
-
-const DeleteButtonText = styled(Text)`
-  color: white;
-`;
-
-
-const ModalContainer = styled(Modal)`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ModalContent = styled(View)`
-  padding: 20px;
-  background-color: white;
-  width: 80%;
-  border-radius: 10px;
-`;
-
-const ModalInput = styled(TextInput)`
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-`;
-
-const ModalButtonsContainer = styled(View)`
-  flex-direction: row;
-  justify-content: space-around;
-  margin-top: 10px;
-`;
+import { Container, CustomAlert, Header, Text } from '../../Components';
+import { Input,CategoryItemContainer, DeleteButton, DeleteButtonText, EditButton, EditButtonText, ModalButtonsContainer, ModalContainer, ModalContent, ModalInput } from './style'
 
 export const CategoryScreen = () => {
   const [nomeCategoria, setNomeCategoria] = useState('');
@@ -166,7 +111,6 @@ export const CategoryScreen = () => {
     }
   };
 
-
   const closeAlert = () => {
     setAlertVisible(false);
   };
@@ -183,74 +127,83 @@ export const CategoryScreen = () => {
 
 
   return (
-    <View>
+    <Container>
       <Header />
-      <TextInput
-        placeholder="Nome da Categoria"
-        value={nomeCategoria}
-        onChangeText={(text) => setNomeCategoria(text)}
-      />
+      <Text size={20} weight="bold" mt={5} ml={10}> Categorização</Text>
+      <Container h={120} justify="center" align="center">
+        <Input
+          placeholder="Nome da Categoria"
+          value={nomeCategoria}
+          onChangeText={(text) => setNomeCategoria(text)}
+        />
 
-      {/* Botões para escolher o tipo de categoria */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 }}>
-        <TouchableOpacity onPress={() => setTipoCategoria('receita')}>
-          <Text style={{ color: tipoCategoria === 'receita' ? 'blue' : 'black' }}>Receita</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setTipoCategoria('gasto')}>
-          <Text style={{ color: tipoCategoria === 'gasto' ? 'red' : 'black' }}>Gasto</Text>
-        </TouchableOpacity>
-      </View>
+        <Container h={70} dir="row" justify="center" align="center">
+          <TouchableOpacity style={{ margin: 10, backgroundColor: '#D9D9D9', padding: 10}} onPress={() => setTipoCategoria('receita')}>
+            <Text size={20} style={{ color: tipoCategoria === 'receita' ? 'blue' : 'black' }}>Receita</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ margin: 10, backgroundColor: '#D9D9D9', padding: 10}} onPress={() => setTipoCategoria('gasto')}>
+            <Text size={20} style={{ color: tipoCategoria === 'gasto' ? 'red' : 'black' }}>Gasto</Text>
+          </TouchableOpacity>
+        </Container>
 
-      <Button title="Adicionar Categoria" onPress={() => handleAddCategoria(tipoCategoria)} />
+      </Container>
 
-      <FlatList
-        data={categorias}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <CategoryItemContainer>
-            <Text>{item.nome}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <EditButton onPress={() => openEditModal(item.id, item.nome)}>
-                <EditButtonText>Editar</EditButtonText>
-              </EditButton>
-              <DeleteButton onPress={() => handleDeleteCategoria(item.id)}>
-                <DeleteButtonText>Excluir</DeleteButtonText>
-              </DeleteButton>
-            </View>
-          </CategoryItemContainer>
-        )}
-      />
+      <Container h={60} justify="center" align="center">
+        <TouchableOpacity style={{ flex:1 , backgroundColor: '#502779', padding: 8, width: '80%', alignItems: 'center', justifyContent: 'center'}} onPress={() => handleAddCategoria(tipoCategoria)}>
+            <Text size={20} color="white">Adiconar categoria</Text>
+          </TouchableOpacity>
+      </Container>
 
-<ModalContainer
+      <Container justify="center" align="center">
+        <FlatList
+          data={categorias}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <CategoryItemContainer>
+              <Text color="white" size={20} mb={10}>{item.nome}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <EditButton onPress={() => openEditModal(item.id, item.nome)}>
+                  <EditButtonText>Editar</EditButtonText>
+                </EditButton>
+                <DeleteButton onPress={() => handleDeleteCategoria(item.id)}>
+                  <DeleteButtonText>Excluir</DeleteButtonText>
+                </DeleteButton>
+              </View>
+            </CategoryItemContainer>
+          )}
+        />
+      </Container>
+
+      
+      <ModalContainer
         animationType="slide"
         transparent={true}
         visible={editModalVisible}
         onRequestClose={closeEditModal}
       >
         <ModalContent>
-          <Text>Editar Categoria</Text>
+          <Text size={18}>Editar Categoria</Text>
           <ModalInput
             placeholder="Novo Nome"
             value={editCategoriaName}
             onChangeText={(text) => setEditCategoriaName(text)}
           />
 
-          {/* Adicione a seleção de tipo na modal */}
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-            <TouchableOpacity onPress={() => setEditCategoriaTipo('receita')}>
-              <Text style={{ color: editCategoriaTipo === 'Receita' ? 'blue' : 'black' }}>Receita</Text>
+            <TouchableOpacity onPress={() => setEditCategoriaTipo('Receita')}>
+              <Text size={18} ml={10} style={{ color: editCategoriaTipo === 'receita' ? 'green' : 'black' }}>Receita</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setEditCategoriaTipo('Gasto')}>
-              <Text style={{ color: editCategoriaTipo === 'Gasto' ? 'red' : 'black' }}>Gasto</Text>
+              <Text size={18} ml={10} style={{ color: editCategoriaTipo === 'Gasto' ? 'red' : 'black' }}>Gasto</Text>
             </TouchableOpacity>
           </View>
 
           <ModalButtonsContainer>
             <TouchableOpacity onPress={closeEditModal}>
-              <Text>Cancelar</Text>
+              <Text size={18}>Cancelar</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleEditCategoria}>
-              <Text>Salvar</Text>
+              <Text size={18}>Salvar</Text>
             </TouchableOpacity>
           </ModalButtonsContainer>
         </ModalContent>
@@ -263,6 +216,6 @@ export const CategoryScreen = () => {
         message={alertMessage}
         onClose={closeAlert}
       />
-    </View>
+    </Container>
   );
 };

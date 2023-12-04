@@ -128,8 +128,10 @@ export const HomeScreen = () => {
           {saldoVisivel ? <Text> R$ {saldoAtual.toFixed(2)} </Text> : null}
 
           <TouchableOpacity onPress={() => setSaldoVisivel(!saldoVisivel)}>
-            {saldoVisivel ? <Ionicons name="eye-off-sharp" size={30} color="black" />:
-                            <Ionicons name="eye-sharp" size={30} color="black" />} 
+            {saldoVisivel ? 
+              <Ionicons name="eye-sharp" size={30} color="black" /> :
+              <Ionicons name="eye-off-sharp" size={30} color="black" />
+            }
           </TouchableOpacity>
         </SaldoContainer>
       </Container>
@@ -153,10 +155,12 @@ export const HomeScreen = () => {
       <Container h={320} justify="center" align="center">
         <ContainerMovimentacao>
           <Container mt={10} h={30} dir="row" justify="space-between">
-            <Ionicons name="calendar-outline" size={24} color="black" />
-            <Text size={20} ml={-45}> Minhas movimentações</Text>
+            <Container dir="row" ml={5} w={220}> 
+              <Ionicons name="calendar-outline" size={24} color="black" />
+              <Text size={20}> Minhas movimentações</Text>
+            </Container>
             <Filter onPress={openDatePicker}>
-              <Text size={20}> {filtro} </Text>
+              <Text size={15}> {filtro} </Text>
             </Filter>
             {selectedDate && (
               <TouchableOpacity onPress={clearDateFilter}>

@@ -15,48 +15,32 @@ export const BudgetScreem = () => {
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
 
+  const fetchMetas = async () => {
+    try {
+      const database = getDatabase();
+      const metasRef = ref(database, `metas/${auth.currentUser.uid}`);
+      onValue(metasRef, (snapshot) => {
+        const metasData = snapshot.val();
+
+        if (metasData) {
+          const metasArray = Object.values(metasData);
+          setMetas(metasArray);
+        } else {
+          // Caso não haja metas, limpe o estado
+          setMetas([]);
+        }
+      });
+    } catch (error) {
+      console.error('Erro ao obter metas:', error.message);
+    }
+  };
+  
   useEffect(() => {
-    const fetchMetas = async () => {
-      try {
-        const database = getDatabase();
-        const metasRef = ref(database, `metas/${auth.currentUser.uid}`);
-        onValue(metasRef, (snapshot) => {
-          const metasData = snapshot.val();
-
-          if (metasData) {
-            const metasArray = Object.values(metasData);
-            setMetas(metasArray);
-          } else {
-            // Caso não haja metas, limpe o estado
-            setMetas([]);
-          }
-        });
-      } catch (error) {
-        console.error('Erro ao obter metas:', error.message);
-      }
-    };
-
     fetchMetas();
   }, []);
 
   const handleApagarMeta = async (meta) => {
-    try {
-      const metasRef = ref(getDatabase(), `metas/${auth.currentUser.uid}`);
-      const metaRef = ref(metasRef, meta.id); // Adicionei um campo "id" para identificar cada meta
-      await set(metaRef, null); // Remove a meta do banco de dados
 
-      setAlertTitle('Sucesso');
-      setAlertMessage('Meta apagada com sucesso!');
-      setAlertVisible(true);
-
-      // Atualizar a lista de metas
-      fetchMetas();
-    } catch (error) {
-      console.error('Erro ao apagar meta:', error.message);
-      setAlertTitle('Erro');
-      setAlertMessage('Erro ao apagar meta. Tente novamente.');
-      setAlertVisible(true);
-    }
   };
 
 

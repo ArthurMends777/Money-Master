@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { LoginScreen, SignupScreen, HomeScreen, TransectionScreen, CategoryScreen, ProfileScreen, BudgetScreem, ExportScreen, FeedbackScreen, SettingsScreen } from '../Screens';
+import { LoginScreen, SignupScreen, HomeScreen, TransectionScreen, CategoryScreen, ProfileScreen, BudgetScreem, ExportScreen, FeedbackScreen } from '../Screens';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebaseConection';
+import CustomDrawerContent from './style';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -33,15 +34,17 @@ export const Routes = () => {
   return (
     <NavigationContainer>
       {user ? (
-        <Drawer.Navigator initialRouteName="Home">
-          <Drawer.Screen name="Home" component={HomeScreen} options={{ headerShown: false}}/>
+        <Drawer.Navigator
+          initialRouteName="Início"
+          drawerContent={(props) => <CustomDrawerContent {...props} />}
+        >
+          <Drawer.Screen name="Início" component={HomeScreen} options={{ headerShown: false}}/>
           <Drawer.Screen name='Perfil' component={ProfileScreen} options={{ headerShown: false}} />
-          <Drawer.Screen name='transection' component={TransectionScreen} options={{ headerShown: false}}/>
-          <Drawer.Screen name='budget' component={BudgetScreem} options={{ headerShown: false}}/>
-          <Drawer.Screen name='Category' component={CategoryScreen} options={{ headerShown: false}}/>
-          <Drawer.Screen name='Export' component={ExportScreen} options={{ headerShown: false}} />
+          <Drawer.Screen name='Transações' component={TransectionScreen} options={{ headerShown: false}}/>
+          <Drawer.Screen name='Orçamento' component={BudgetScreem} options={{ headerShown: false}}/>
+          <Drawer.Screen name='Categoria' component={CategoryScreen} options={{ headerShown: false}}/>
+          <Drawer.Screen name='Exportar' component={ExportScreen} options={{ headerShown: false}} />
           <Drawer.Screen name='Feedback' component={FeedbackScreen} options={{ headerShown: false}}/>
-          <Drawer.Screen name='Settings' component={SettingsScreen} options={{ headerShown: false}}/>
         </Drawer.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="Login">

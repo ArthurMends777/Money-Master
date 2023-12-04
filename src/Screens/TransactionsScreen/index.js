@@ -45,9 +45,9 @@ export const TransectionScreen = () => {
 const handleRegister = async () => {
   try {
     // Verificar se a descrição e o valor foram preenchidos
-    if (!description || !amount) {
+    if ( !amount) {
       setAlertTitle('Erro');
-      setAlertMessage('Preencha todos os campos.');
+      setAlertMessage('Informe um valor para a transação.');
       setAlertVisible(true);
       return;
     }
@@ -114,22 +114,35 @@ const closeAlert = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <Container bg="white" align="center">
+        <Container bg="white">
           <Header />
-          <Text size={24} mb={15} mt={10} weight="bold">
+          <Text size={24} ml={10} mb={15} mt={10} weight="bold">
             Registrar
           </Text>
-          <Input
-            placeholder="Descrição da transação"
-            value={description}
-            onChangeText={(text) => setDescription(text)}
-          />
-          <Input
-            placeholder="Valor"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={(text) => setAmount(text)}
-          />
+          <Container h={100} align="center">
+            <Input
+              placeholder="Descrição da transação"
+              value={description}
+              onChangeText={(text) => setDescription(text)}
+            />
+            <Input
+              placeholder="Valor"
+              keyboardType="numeric"
+              value={amount}
+              onChangeText={(text) => setAmount(text)}
+            />
+
+          </Container>
+          <Picker
+            selectedValue={selectedCategory}
+            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+            style={{ height: 50, width: '100%' }}
+          >
+            <Picker.Item label="Selecione uma categoria" value="" />
+            {categories.map((category) => (
+              <Picker.Item key={category.id} label={category.nome} value={category.nome} />
+            ))}
+          </Picker>
 
         <Container mt={10} bg='white' h={70} dir="row" justify="space-around">
           <BtnReceita onPress={() => setTransactionType('Receita')}>
@@ -146,21 +159,11 @@ const closeAlert = () => {
           </BtnReceita>
         </Container>
 
-          {/* Adicione o Picker para escolher a categoria */}
-          <Picker
-        selectedValue={selectedCategory}
-        onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-        style={{ height: 50, width: '100%' }}
-      >
-        <Picker.Item label="Selecione uma categoria" value="" />
-        {categories.map((category) => (
-          <Picker.Item key={category.id} label={category.nome} value={category.nome} />
-        ))}
-      </Picker>
-
-        <SubmitButton onPress={handleRegister}>
-          <SubmitText>Registrar</SubmitText>
-        </SubmitButton>
+        <Container align="center">
+          <SubmitButton onPress={handleRegister}>
+            <SubmitText>Registrar</SubmitText>
+          </SubmitButton>
+        </Container>
           <CustomAlert
             visible={alertVisible}
             title={alertTitle}
