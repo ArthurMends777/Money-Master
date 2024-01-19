@@ -1,4 +1,4 @@
-# AppFinances
+# Money Master
 
 Um aplicativo de finanças simples desenvolvido em React Native Expo.
 
